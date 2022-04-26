@@ -2,8 +2,6 @@
 
 source ./.customshell.sh
 
-trap _clean INT QUIT TERM EXIT
-
 ################ tmux
 if ! _isInstalled "tmux" ;then
     _info "installing tmux"
