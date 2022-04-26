@@ -108,7 +108,7 @@ custom_help() {
     grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)' /home/miles/.customshell.sh
 }
 
-asyncto () {
+rsyncto () {
     local loc_dir="$4"
     local tg_dir="$5"
     local usr="$1"
