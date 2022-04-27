@@ -9,7 +9,6 @@ FMT_BLUE=$(printf '\033[34m')
 FMT_BOLD=$(printf '\033[1m')
 FMT_RESET=$(printf '\033[0m')
 
-
 _info() {
     printf "%s$(date '+%Y-%m-%d %H:%M:%S') ::  LOGGING: %s%s" "$FMT_BOLD" "$1" "$FMT_RESET"
     printf '\n'
@@ -56,9 +55,31 @@ _existsCMD() {
 
 _os() {
     local os=""
-    [ -f "/etc/debian_version" ] && source /etc/os-release && os="${ID}" && printf -- "%s" "${os}" && return
-    [ -f "/etc/fedora-release" ] && os="fedora" && printf -- "%s" "${os}" && return
-    [ -f "/etc/redhat-release" ] && os="centos" && printf -- "%s" "${os}" && return
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        # ...
+        [ -f "/etc/debian_version" ] && source /etc/os-release && os="${ID}" && printf -- "%s" "${os}" && return
+        [ -f "/etc/fedora-release" ] && os="fedora" && printf -- "%s" "${os}" && return
+        [ -f "/etc/redhat-release" ] && os="centos" && printf -- "%s" "${os}" && return
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # Mac OSX
+        os="darwin" && printf -- "%s" "${os}" && return
+    elif [[ "$OSTYPE" == "cygwin" ]]; then
+        # POSIX compatibility layer and Linux environment emulation for Windows
+        echo " do nothing"
+    elif [[ "$OSTYPE" == "msys" ]]; then
+        # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
+        echo " do nothing"
+    elif [[ "$OSTYPE" == "win32" ]]; then
+        # I'm not sure this can happen.
+        echo " do nothing"
+    elif [[ "$OSTYPE" == "freebsd"* ]]; then
+        # ...
+        echo " do nothing"
+    else
+        # Unknown.
+        echo "unkonwn OS"
+    fi
+
 }
 
 _isInstalled() {
@@ -82,6 +103,15 @@ _isInstalled() {
                 return
             fi
             ;;
+        darwin)
+            pgkutil --pkgs | grep "$1" >/dev/null 2>&1
+            if [ "$?" -ne 0 ];then
+                _error "$1 not installed"
+                return 1
+            else
+                return
+            fi
+            ;;
         *)
             _error "Not supported OS"
             ;;
@@ -100,8 +130,6 @@ EOF
 `
 echo "${res}"
 }
-
-
 
 custom_help() {
     _info "custom define below commands"
