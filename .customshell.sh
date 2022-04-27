@@ -36,7 +36,16 @@ _error_detect() {
     eval ${cmd} 1> /dev/null
     if [ $? -ne 0 ]; then
         _error "Execution command (${cmd}) failed, please check it and try again."
-	exit
+	    exit
+    fi
+}
+
+_exec_detect() {
+    local cmd="$1"
+    _info "${cmd}"
+    eval ${cmd} 1> /dev/null
+    if [ $? -ne 0 ]; then
+        _error "Execution command (${cmd}) failed, please check it and try again."
     fi
 }
 

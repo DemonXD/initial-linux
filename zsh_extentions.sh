@@ -37,7 +37,15 @@ installautosuggestions(){
     if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ];then
         _info "install autosuggestions"
         _exec_detect "git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-        _exec_detect "sed -ir "/^plugins=\(git\)/a plugins=\(zsh-autosuggestions\)" $HOME/.zshrc"
+        if [ "$(_os)" = "darwin" ];then
+            _exec_detect '
+            sed -ir /^plugins=(git)/a\
+            plugins=(zsh-autosuggestions)
+            " $HOME/.zshrc
+            '
+        else
+            _exec_detect "sed -ir "/^plugins=\(git\)/a plugins=\(zsh-autosuggestions\)" $HOME/.zshrc"
+        fi
         _exec_detect "source $HOME/.zshrc"
         _succeed "autosuggesstions config succeed"
     else
