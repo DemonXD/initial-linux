@@ -2,15 +2,8 @@
 
 source ./.customshell.sh
 
-trap _clean INT QUIT TERM EXIT
-
-_clean() {
-    _info "cleanning .oh-my-zsh dir"
-    _exec_detect "rm -rf ~/.oh-my-zsh"
-    _info "will not uninstall expect and curl"
-    _info "cleanning ~/.zshrc"
-    _exec_detect "rm ~/.zshrc"
-}
+trap "_sig_cleanup" INT QUIT TERM
+trap "_cleanup" EXIT
 
 zshHelp(){
     _info "install oh-my-zsh with follow: "
@@ -21,12 +14,11 @@ zshHelp(){
 }
 
 installHighLighting() {
-    if [ ! -f "${HOME}/zsh-plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ];then
-        _info "install zsh-syntax-highlighting, create zsh-plugins dir in ~ dir"
-        _exec_detect "mkdir -p ${HOME}/zsh-plugins"
-        _exec_detect "git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${HOME}/zsh-plugins/zsh-syntax-highlighting"
-        _exec_detect "echo "source ${HOME}/zsh-plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ${HOME}/.zshrc"
-        _exec_detect "source ${HOME}/.zshrc"
+    if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ];then
+        _info "install zsh-syntax-highlighting"
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+        echo "source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ${HOME}/.zshrc
+        source ${HOME}/.zshrc
         _succeed "highlighting config succeed"
     else
         info "zsh-syntax-highlighting.zsh has beed existed"
@@ -36,25 +28,26 @@ installHighLighting() {
 installautosuggestions(){
     if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ];then
         _info "install autosuggestions"
-        _exec_detect "git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-        if [ "$(_os)" = "darwin" ];then
-            _exec_detect '
-            sed -ir /^plugins=(git)/a\
-            plugins=(zsh-autosuggestions)
-            " $HOME/.zshrc
-            '
-        else
-            _exec_detect "sed -ir "/^plugins=\(git\)/a plugins=\(zsh-autosuggestions\)" $HOME/.zshrc"
-        fi
-        _exec_detect "source $HOME/.zshrc"
-        _succeed "autosuggesstions config succeed"
+        git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+        # if [ "$(_os)" = "darwin" ];then
+        #     _exec_detect '
+        #     sed -ir /^plugins=(git)/a\
+        #     plugins=(zsh-autosuggestions)
+        #     " $HOME/.zshrc
+        #     '
+        # else
+        #     _exec_detect "sed -ir "/^plugins=\(git\)/a plugins=\(zsh-autosuggestions\)" $HOME/.zshrc"
+        # fi
+        echo "source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ${HOME}/.zshrc
+        source $HOME/.zshrc
+        _succeed "autosuggestions config succeed"
     else
         _info "autosuggestions dir has beed existed"
     fi
 }
 
 main() {
-    if ! _isInstalled "zsh" ;then
+    if ! _existsCMD "zsh" ;then
         zshHelp
     else
         installHighLighting
