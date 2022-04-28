@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#trap _clean INT QUIT TERM
-
 FMT_RED=$(printf '\033[31m')
 FMT_GREEN=$(printf '\033[32m')
 FMT_YELLOW=$(printf '\033[33m')
@@ -28,6 +26,12 @@ _warning() {
 _error() {
     printf "%s$(date '+%Y-%m-%d %H:%M:%S') ::  ERROR: %s%s" "$FMT_RED" "$1" "$FMT_RESET"
     printf '\n'
+}
+
+_error_exit() {
+    printf "%s$(date '+%Y-%m-%d %H:%M:%S') ::  ERROR: %s%s" "$FMT_RED" "$1" "$FMT_RESET"
+    printf '\n'
+    exit
 }
 
 _error_detect() {
@@ -127,33 +131,23 @@ _isInstalled() {
     esac
 }
 
-execSQL()
-{
-    connectioninfo="$1"
-    SQL="$2"
-    res=`sqlplus -S "$connectioninfo" << EOF
-SET pagesize 0 linesize 1000 feedback off heading off echo off serveroutput on
-${SQL}
-QUIT;
-EOF
-`
-echo "${res}"
+rsyncto () {
+    if ! _existsCMD "sshpass";then
+        _error_exit "pls install sshpass"
+
+    if ! _existsCMD "rsync";then
+        _error_exit "pls install rsync"
+    fi
+    local loc="$4"
+    local tg="$5"
+    local usr="$1"
+    local pwd="$2"
+    local domain="$3"
+
+    sshpass -p "$pwd" -- rsync -avzP --progress "$loc" "$usr@$domain:$tg"
 }
 
 custom_help() {
     _info "custom define below commands"
     grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)' /home/miles/.customshell.sh
 }
-
-rsyncto () {
-    local loc_dir="$4"
-    local tg_dir="$5"
-    local usr="$1"
-    local pwd="$2"
-    local domain="$3"
-
-    sshpass -p '$pwd' -- rsync -avzP --progress "$loc_dir" "$usr@$domain:$tg_dir"
-}
-
-alias cssh="sshpass -p 'pass@dba' -- ssh"
-alias csftp="sshpass -p 'pass@dba' -- sftp"
