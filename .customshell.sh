@@ -37,17 +37,17 @@ _error_exit() {
 _error_detect() {
     local cmd="$1"
     _info "${cmd}"
-    eval ${cmd} 1> /dev/null
+    eval ${cmd} 1>/dev/null
     if [ $? -ne 0 ]; then
         _error "Execution command (${cmd}) failed, please check it and try again."
-	    exit
+        exit
     fi
 }
 
 _exec_detect() {
     local cmd="$1"
     _info "${cmd}"
-    eval ${cmd} 1> /dev/null
+    eval ${cmd} 1>/dev/null
     if [ $? -ne 0 ]; then
         _error "Execution command (${cmd}) failed, please check it and try again."
     fi
@@ -55,12 +55,12 @@ _exec_detect() {
 
 _existsCMD() {
     local cmd="$1"
-    if eval type type > /dev/null 2>&1; then
-        eval type "$cmd" > /dev/null 2>&1
-    elif command > /dev/null 2>&1; then
-        command -v "$cmd" > /dev/null 2>&1
+    if eval type type >/dev/null 2>&1; then
+        eval type "$cmd" >/dev/null 2>&1
+    elif command >/dev/null 2>&1; then
+        command -v "$cmd" >/dev/null 2>&1
     else
-        which "$cmd" > /dev/null 2>&1
+        which "$cmd" >/dev/null 2>&1
     fi
     local rt=$?
     return ${rt}
@@ -98,44 +98,44 @@ _os() {
 _isInstalled() {
     [ -z "$(_os)" ] && _error "Not supported OS"
     case "$(_os)" in
-        ubuntu|debian|raspbian)
-            dpkg -s "$1" >/dev/null 2>&1
-	        if [ "$?" -ne 0 ];then
-		        _error "$1 not installed"
-                return 1
-            else
-                return
-            fi
-	    ;;
-        fedora|centos)
-            rpm -qa | grep "$1" >/dev/null 2>&1
-	        if [ "$?" -ne 0 ];then
-		        _error "$1 not installed"
-                return 1
-            else
-                return
-            fi
-            ;;
-        darwin)
-            pgkutil --pkgs | grep "$1" >/dev/null 2>&1
-            if [ "$?" -ne 0 ];then
-                _error "$1 not installed"
-                return 1
-            else
-                return
-            fi
-            ;;
-        *)
-            _error "Not supported OS"
-            ;;
+    ubuntu | debian | raspbian)
+        dpkg -s "$1" >/dev/null 2>&1
+        if [ "$?" -ne 0 ]; then
+            _error "$1 not installed"
+            return 1
+        else
+            return
+        fi
+        ;;
+    fedora | centos)
+        rpm -qa | grep "$1" >/dev/null 2>&1
+        if [ "$?" -ne 0 ]; then
+            _error "$1 not installed"
+            return 1
+        else
+            return
+        fi
+        ;;
+    darwin)
+        pgkutil --pkgs | grep "$1" >/dev/null 2>&1
+        if [ "$?" -ne 0 ]; then
+            _error "$1 not installed"
+            return 1
+        else
+            return
+        fi
+        ;;
+    *)
+        _error "Not supported OS"
+        ;;
     esac
 }
 
-rsyncto () {
-    if ! _existsCMD "sshpass";then
+rsyncto() {
+    if ! _existsCMD "sshpass"; then
         _error_exit "pls install sshpass"
-
-    if ! _existsCMD "rsync";then
+    fi
+    if ! _existsCMD "rsync"; then
         _error_exit "pls install rsync"
     fi
     local loc="$4"
