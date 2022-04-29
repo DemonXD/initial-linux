@@ -23,17 +23,16 @@ _warning() {
 
 }
 
-_error() {
+_red() {
     printf "%s$(date '+%Y-%m-%d %H:%M:%S') ::  ERROR: %s%s" "$FMT_RED" "$1" "$FMT_RESET"
     printf '\n'
 }
 
-_error_exit() {
+_error() {
     printf "%s$(date '+%Y-%m-%d %H:%M:%S') ::  ERROR: %s%s" "$FMT_RED" "$1" "$FMT_RESET"
     printf '\n'
     exit
 }
-
 _error_detect() {
     local cmd="$1"
     _info "${cmd}"
@@ -44,13 +43,11 @@ _error_detect() {
     fi
 }
 
-_exec_detect() {
+_exec_succeed() {
     local cmd="$1"
-    _info "${cmd}"
-    eval ${cmd} 1>/dev/null
-    if [ $? -ne 0 ]; then
-        _error "Execution command (${cmd}) failed, please check it and try again."
-    fi
+    eval ${cmd} >/dev/null 2>&1
+    local rt=$?
+    return ${rt}
 }
 
 _existsCMD() {
