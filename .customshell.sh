@@ -66,6 +66,24 @@ _existsCMD() {
     return ${rt}
 }
 
+_existsFile(){
+    file="$1"
+    if [ -f "$file" ];then
+        return
+    else
+        false
+    fi
+}
+
+_existsDir(){
+    dir="$1"
+    if [ -d "$dir" ];then
+        return
+    else
+        false
+    fi
+}
+
 _os() {
     local os=""
     if [[ "$OSTYPE" == "linux-gnu" ]]; then
