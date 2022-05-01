@@ -64,7 +64,7 @@ _existsCMD() {
 }
 
 _existsFile(){
-    file="$1"
+    local file="$1"
     if [ -f "$file" ];then
         true
     else
@@ -73,7 +73,7 @@ _existsFile(){
 }
 
 _existsDir(){
-    dir="$1"
+    local dir="$1"
     if [ -d "$dir" ];then
         true
     else
@@ -82,12 +82,26 @@ _existsDir(){
 }
 
 _existsProg(){
-    program_name="$1"
-    num=$(ps aux | grep "$1" | grep -v grep | wc -l)
+    local program_name="$1"
+    local num=$(ps aux | grep "$1" | grep -v grep | wc -l)
     if [ "$num" -eq 0 ];then
         false
     else
         true
+    fi
+}
+
+_listProg() {
+    local program_name="$1"
+    local position="$2"
+    if [ -z "$position" ];then
+        for pg in "$(ps aux | grep $1 | grep -v grep)"; do
+            echo $pg
+        done
+    else
+        for pg in "$(ps aux | grep $1 | grep -v grep | awk -v posi="$position" '{print $posi}')"; do
+            echo $pg
+        done
     fi
 }
 
