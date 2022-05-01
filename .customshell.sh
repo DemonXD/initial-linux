@@ -66,7 +66,7 @@ _existsCMD() {
 _existsFile(){
     file="$1"
     if [ -f "$file" ];then
-        return
+        true
     else
         false
     fi
@@ -75,9 +75,19 @@ _existsFile(){
 _existsDir(){
     dir="$1"
     if [ -d "$dir" ];then
-        return
+        true
     else
         false
+    fi
+}
+
+_existsProg(){
+    program_name="$1"
+    num=$(ps aux | grep "$1" | grep -v grep | wc -l)
+    if [ "$num" -eq 0 ];then
+        false
+    else
+        true
     fi
 }
 
@@ -116,28 +126,28 @@ _isInstalled() {
     ubuntu | debian | raspbian)
         dpkg -s "$1" >/dev/null 2>&1
         if [ "$?" -ne 0 ]; then
-            _error "$1 not installed"
-            return 1
+            _red "$1 not installed"
+            false
         else
-            return
+            true
         fi
         ;;
     fedora | centos)
         rpm -qa | grep "$1" >/dev/null 2>&1
         if [ "$?" -ne 0 ]; then
-            _error "$1 not installed"
-            return 1
+            _red "$1 not installed"
+            false
         else
-            return
+            true
         fi
         ;;
     darwin)
         pgkutil --pkgs | grep "$1" >/dev/null 2>&1
         if [ "$?" -ne 0 ]; then
-            _error "$1 not installed"
-            return 1
+            _red "$1 not installed"
+            false
         else
-            return
+            true
         fi
         ;;
     *)
