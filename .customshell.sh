@@ -8,38 +8,38 @@ FMT_BOLD=$(printf '\033[1m')
 FMT_RESET=$(printf '\033[0m')
 
 _info() {
-    printf "%s$(date '+%Y-%m-%d %H:%M:%S') ::  LOGGING: %s%s" "$FMT_BOLD" "$1" "$FMT_RESET"
+    printf "%s$(date '+%Y-%m-%d %H:%M:%S') :: LOGGING: %s%s" "$FMT_BOLD" "$1" "$FMT_RESET"
     printf '\n'
 }
 
 _succeed() {
-    printf "%s$(date '+%Y-%m-%d %H:%M:%S') ::  SUCCEED: %s%s" "$FMT_GREEN" "$1" "$FMT_RESET"
+    printf "%s$(date '+%Y-%m-%d %H:%M:%S') :: SUCCEED: %s%s" "$FMT_GREEN" "$1" "$FMT_RESET"
     printf '\n'
 }
 
 _warning() {
-    printf "%s$(date '+%Y-%m-%d %H:%M:%S') ::  WARNING: %s%s" "$FMT_YELLOW" "$1" "$FMT_RESET"
+    printf "%s$(date '+%Y-%m-%d %H:%M:%S') :: WARNING: %s%s" "$FMT_YELLOW" "$1" "$FMT_RESET"
     printf '\n'
 
 }
 
 _red() {
-    printf "%s$(date '+%Y-%m-%d %H:%M:%S') ::  ERROR: %s%s" "$FMT_RED" "$1" "$FMT_RESET"
+    printf "%s$(date '+%Y-%m-%d %H:%M:%S') :: ATTENTION %s%s" "$FMT_RED" "$1" "$FMT_RESET"
     printf '\n'
 }
 
 _error() {
-    printf "%s$(date '+%Y-%m-%d %H:%M:%S') ::  ERROR: %s%s" "$FMT_RED" "$1" "$FMT_RESET"
+    printf "%s$(date '+%Y-%m-%d %H:%M:%S') :: ERROR: %s%s" "$FMT_RED" "$1" "$FMT_RESET"
     printf '\n'
     exit
 }
+
 _error_detect() {
     local cmd="$1"
     _info "${cmd}"
     eval ${cmd} 1>/dev/null
     if [ $? -ne 0 ]; then
         _error "Execution command (${cmd}) failed, please check it and try again."
-        exit
     fi
 }
 
